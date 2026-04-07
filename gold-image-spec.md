@@ -51,14 +51,13 @@ and is free at our scale — a small team pulling a single image during
 codespace creation stays well within ghcr.io free limits. Codespace
 pulls via GitHub token do not count against transfer quotas.
 
-Other options might include:
+This is a temporary decision. Long term options for team to decide:
+
 1. **GitHub Container Registry (ghcr.io)** — lives next to the code, free for
    public repos, org-level access control
-   - Example: ghcr.io/ciwg/workspace-base:1.24.13-3.12
 2. **Docker Hub** — more widely known, but separate auth
 3. **Private registry** — if the team has one
 
-Recommendation: ghcr.io/ciwg/workspace-base — keeps everything in GitHub.
 
 ## Image tagging and versioning
 
@@ -73,14 +72,17 @@ may depend on a previous image.
 
 ## How it gets built
 
-Option A: **Manual rebuild** — someone runs `docker build` and pushes.
-Simple but depends on a person remembering.
+Manual build until the image contents stabilize.
 
-Option B: **GitHub Actions** — a workflow in workspace-config that
-triggers on Makefile changes. Builds and pushes the image automatically.
+To build and push:
 
-Recommendation: Start with manual (Option A). Move to Actions once the
-image contents stabilize.
+    docker build -t ghcr.io/ciwg/workspace-base:$(date +%Y-%m-%d) .
+    docker push ghcr.io/ciwg/workspace-base:$(date +%Y-%m-%d)
+    docker tag ghcr.io/ciwg/workspace-base:$(date +%Y-%m-%d) ghcr.io/ciwg/workspace-base:latest
+    docker push ghcr.io/ciwg/workspace-base:latest
+
+Long term: GitHub Actions workflow triggered on Dockerfile changes.
+To be decided when image contents stabilize.
 
 ## Dockerfile structure
 
@@ -196,7 +198,7 @@ Do NOT rebuild for:
 - decomk.conf changes
 - Makefile changes that only affect project targets
 
-## Open decisions for stevegt
+## Open decisions  
 
 1. Where should the gold image live? (ghcr.io recommended): Temporarily addressed.
 2. Manual or automated builds? (manual to start recommended)
@@ -225,5 +227,5 @@ Unversioned apt installs mean a Dockerfile rebuild at a later date may
 produce a different image. Mitigated for now by never deleting tagged
 images — a tagged image is frozen at build time. However, this violates
 the infrastructures.org recovery principle: we cannot guarantee an
-identical rebuild from the Dockerfile alone. Raise with stevegt before
+identical rebuild from the Dockerfile alone. Raise with team before
 the first production build.
