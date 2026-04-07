@@ -42,8 +42,16 @@ Project-specific targets that vary per repo:
 
 ## Where the gold image lives
 
-Decision needed: pick one of these options.
+The gold image will be hosted at:
 
+    ghcr.io/ciwg/workspace-base
+
+This keeps the image next to the code, uses GitHub org access control,
+and is free at our scale — a small team pulling a single image during
+codespace creation stays well within ghcr.io free limits. Codespace
+pulls via GitHub token do not count against transfer quotas.
+
+Other options might include:
 1. **GitHub Container Registry (ghcr.io)** — lives next to the code, free for
    public repos, org-level access control
    - Example: ghcr.io/ciwg/workspace-base:1.24.13-3.12
@@ -190,7 +198,7 @@ Do NOT rebuild for:
 
 ## Open decisions for stevegt
 
-1. Where should the gold image live? (ghcr.io recommended)
+1. Where should the gold image live? (ghcr.io recommended): Temporarily addressed.
 2. Manual or automated builds? (manual to start recommended)
 3. Should the gold image repo be ciwg/workspace-base or live inside
    ciwg/workspace-config?
